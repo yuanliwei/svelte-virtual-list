@@ -26,7 +26,11 @@
         (async () => {
             await tick();
             listScrollTop = scrollTop;
-            renderList(listScrollTop, data);
+            await renderList(listScrollTop, data);
+            let listScrollHeight = data.length * itemClientHeight;
+            let percent = listScrollTop / (listScrollHeight - list.clientHeight);
+            scrollBar.scrollTop =
+                percent * (scrollBar.scrollHeight - scrollBar.clientHeight);
         })();
 
         list.addEventListener("mouseenter", focusScrollBar);
@@ -183,7 +187,6 @@
      * @param {object[]} [datas]
      */
     async function renderList(scrollTop, datas) {
-        console.log("renderList");
         listOffsetTop = -scrollTop % itemClientHeight;
         let end = 1;
         if (itemClientHeight > 0 && listClientHeight > 0) {
