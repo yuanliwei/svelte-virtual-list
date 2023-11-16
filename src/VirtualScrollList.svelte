@@ -105,9 +105,10 @@
         let time = performance.now();
         let speedDelta = 0.99;
         let version = ++scrollStateVersion;
-        while (Math.abs(speed) > 0.01 && version == scrollStateVersion) {
+        let changed = true;
+        while (changed && version == scrollStateVersion) {
             await animationFrame();
-            updateListScrollTop(speed * (performance.now() - time));
+            changed = updateListScrollTop(speed * (performance.now() - time));
             time = performance.now();
             speed *= speedDelta;
         }
@@ -165,7 +166,7 @@
             }
         }
 
-        if (countListScrollTop != listScrollTop) {
+        if (Math.abs(countListScrollTop - listScrollTop) > 0.01) {
             listScrollTop = countListScrollTop;
             scrollTop = listScrollTop;
             return true;
@@ -223,20 +224,21 @@
      * @param {number} countListScrollTop
      * @param {boolean} [animation]
      */
-    export async function scrollToListScrollTop(countListScrollTop, animation) {
+    export async function scrollToWithListScrollTop(
+        countListScrollTop,
+        animation
+    ) {
         let diff = countListScrollTop - listScrollTop;
         let version = ++scrollStateVersion;
         if (animation) {
             let time = performance.now();
             let delta = (countListScrollTop - listScrollTop) * 0.2;
             let tmpListScrollTop = -10;
-            while (
-                Math.abs(tmpListScrollTop - listScrollTop) > 0.1 &&
-                scrollStateVersion == version
-            ) {
+            let changed = true;
+            while (changed && scrollStateVersion == version) {
                 tmpListScrollTop = listScrollTop;
                 await animationFrame();
-                updateListScrollTop(delta);
+                changed = updateListScrollTop(delta);
                 time = performance.now();
                 delta = (countListScrollTop - listScrollTop) * 0.2;
             }
@@ -251,7 +253,7 @@
      */
     export async function scrollListOffset(offset, animation) {
         let countListScrollTop = offset + listScrollTop;
-        await scrollToListScrollTop(countListScrollTop, animation);
+        await scrollToWithListScrollTop(countListScrollTop, animation);
     }
 
     /**
@@ -262,7 +264,7 @@
         let listScrollHeight = data.length * itemClientHeight;
         let countListScrollTop =
             percent * (listScrollHeight - list.clientHeight);
-        await scrollToListScrollTop(countListScrollTop, animation);
+        await scrollToWithListScrollTop(countListScrollTop, animation);
     }
 
     /**
@@ -271,7 +273,7 @@
      */
     export async function scrollToPosition(index, animation) {
         let countListScrollTop = index * itemClientHeight;
-        await scrollToListScrollTop(countListScrollTop, animation);
+        await scrollToWithListScrollTop(countListScrollTop, animation);
     }
 </script>
 
