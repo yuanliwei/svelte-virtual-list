@@ -9,6 +9,8 @@
 
   let showList = true;
   let scrollTop = 0;
+  /** @type{VirtualScrollList} */
+  let list = null;
 
   // $: console.log("initScrollTop", scrollTop);
 </script>
@@ -16,7 +18,13 @@
 <main>
   <div class="content">
     {#if showList}
-      <VirtualScrollList data={datas} bind:scrollTop let:item let:index>
+      <VirtualScrollList
+        data={datas}
+        bind:scrollTop
+        let:item
+        let:index
+        bind:this={list}
+      >
         <div class="item">{index} : {item.text}</div>
       </VirtualScrollList>
     {/if}
@@ -27,6 +35,27 @@
       showList = !showList;
     }}>toggle</button
   >
+  <button
+    on:click={() => {
+      list.scrollToPercent(0.7, true);
+    }}
+  >
+    scrollToBottom
+  </button>
+  <button
+    on:click={() => {
+      list.scrollToPosition(34, true);
+    }}
+  >
+    scrollToPosition
+  </button>
+  <button
+    on:click={() => {
+      list.scrollListOffset(1000, true);
+    }}
+  >
+    scrollListOffset
+  </button>
 </main>
 
 <style>

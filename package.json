@@ -1,13 +1,14 @@
 {
   "name": "@yuanliwei/svelte-virtual-list",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "svelte virtual list",
   "type": "module",
   "author": "yuanliwei",
   "main": "src/VirtualScrollList.svelte",
   "files": [
     "src/VirtualScrollList.svelte",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "keywords": [
     "svelte",

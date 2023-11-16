@@ -17,8 +17,7 @@
     let listOffsetTop = 0;
     let listRenderStart = 0;
     let scrollBarHeight = 0;
-    let skipScrollEventOnce = false;
-    let skipWheelEventOnce = false;
+    let skipScrollBarEventOnce = false;
 
     $: renderList(listScrollTop, data);
 
@@ -28,7 +27,8 @@
             listScrollTop = scrollTop;
             await renderList(listScrollTop, data);
             let listScrollHeight = data.length * itemClientHeight;
-            let percent = listScrollTop / (listScrollHeight - list.clientHeight);
+            let percent =
+                listScrollTop / (listScrollHeight - list.clientHeight);
             scrollBar.scrollTop =
                 percent * (scrollBar.scrollHeight - scrollBar.clientHeight);
         })();
@@ -69,6 +69,7 @@
         lastTouchY = e.touches[0].clientY;
         lastTouchTime = e.timeStamp;
         touchSpeed = 0;
+        scrollStateVersion++;
     }
 
     /**
@@ -102,7 +103,8 @@
         let speed = touchSpeed * flingScale;
         let time = performance.now();
         let speedDelta = 0.99;
-        while (Math.abs(speed) > 0.01 && Math.abs(touchSpeed) > 0) {
+        let version = ++scrollStateVersion;
+        while (Math.abs(speed) > 0.01 && version == scrollStateVersion) {
             await animationFrame();
             scrollList(speed * (performance.now() - time));
             time = performance.now();
@@ -118,18 +120,14 @@
             return;
         }
         e.preventDefault();
+        scrollStateVersion++;
         scrollList(e.deltaY);
     }
 
     /**
      * @param {number} deltaY
      */
-    function scrollList(deltaY) {
-        if (skipWheelEventOnce) {
-            skipWheelEventOnce = false;
-            return;
-        }
-        skipScrollEventOnce = true;
+    function scrollList(deltaY, updateScrollBar = true) {
         let countListScrollTop = listScrollTop + deltaY;
 
         if (countListScrollTop < 0) {
@@ -152,9 +150,12 @@
             countListScrollTop / (listScrollHeight - list.clientHeight);
         let countScrollTop =
             percent * (scrollBar.scrollHeight - scrollBar.clientHeight);
-        if (Math.floor(countScrollTop) != Math.floor(scrollBar.scrollTop)) {
-            scrollBar.scrollTop =
-                percent * (scrollBar.scrollHeight - scrollBar.clientHeight);
+        if (updateScrollBar) {
+            if (Math.floor(countScrollTop) != Math.floor(scrollBar.scrollTop)) {
+                skipScrollBarEventOnce = true;
+                scrollBar.scrollTop =
+                    percent * (scrollBar.scrollHeight - scrollBar.clientHeight);
+            }
         }
 
         if (countListScrollTop != listScrollTop) {
@@ -164,11 +165,11 @@
     }
 
     function onScroll() {
-        if (skipScrollEventOnce) {
-            skipScrollEventOnce = false;
+        if (skipScrollBarEventOnce) {
+            skipScrollBarEventOnce = false;
             return;
         }
-        skipWheelEventOnce = true;
+        scrollStateVersion++
         let percent =
             scrollBar.scrollTop /
             (scrollBar.scrollHeight - scrollBar.clientHeight);
@@ -176,10 +177,7 @@
         let listScrollHeight = data.length * itemClientHeight;
         let countListScrollTop =
             percent * (listScrollHeight - list.clientHeight);
-        if (Math.floor(countListScrollTop) != Math.floor(listScrollTop)) {
-            listScrollTop = countListScrollTop;
-            scrollTop = listScrollTop;
-        }
+        scrollList(countListScrollTop - listScrollTop, false);
     }
 
     /**
@@ -207,6 +205,63 @@
         } else {
             scrollBarHeight = itemClientHeight * datas.length;
         }
+    }
+
+    let scrollStateVersion = 0;
+
+    /**
+     * @param {number} countListScrollTop
+     * @param {boolean} [animation]
+     */
+    export async function scrollToListScrollTop(countListScrollTop, animation) {
+        let diff = countListScrollTop - listScrollTop;
+        let version = ++scrollStateVersion;
+        if (animation) {
+            let time = performance.now();
+            let delta = (countListScrollTop - listScrollTop) * 0.2;
+            let tmpListScrollTop = -10;
+            while (
+                Math.abs(tmpListScrollTop - listScrollTop) > 0.1 &&
+                scrollStateVersion == version
+            ) {
+                tmpListScrollTop = listScrollTop;
+                await animationFrame();
+                scrollList(delta);
+                time = performance.now();
+                delta = (countListScrollTop - listScrollTop) * 0.2;
+            }
+        } else {
+            scrollList(diff);
+        }
+    }
+
+    /**
+     * @param {number} offset
+     * @param {boolean} animation
+     */
+    export async function scrollListOffset(offset, animation) {
+        let countListScrollTop = offset + listScrollTop;
+        await scrollToListScrollTop(countListScrollTop, animation);
+    }
+
+    /**
+     * @param {number} percent 0-1
+     * @param {boolean} [animation]
+     */
+    export async function scrollToPercent(percent, animation) {
+        let listScrollHeight = data.length * itemClientHeight;
+        let countListScrollTop =
+            percent * (listScrollHeight - list.clientHeight);
+        await scrollToListScrollTop(countListScrollTop, animation);
+    }
+
+    /**
+     * @param {number} index
+     * @param {boolean} [animation]
+     */
+    export async function scrollToPosition(index, animation) {
+        let countListScrollTop = index * itemClientHeight;
+        await scrollToListScrollTop(countListScrollTop, animation);
     }
 </script>
 
