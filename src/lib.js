@@ -17,8 +17,7 @@ export class ListState {
         this.lastTouchY = 0
         this.lastTouchTime = 0
         this.touchSpeed = 0
-        this.flingScale = 1
-        this.lastFlingTime = 0
+        this.flingSpeed = 0
 
         this.data = []
         this.renderData = []
@@ -28,13 +27,11 @@ export class ListState {
 
     /**
      * @param {HTMLDivElement} list
-     * @param {HTMLDivElement} scrollBar
      * @param {number} scrollTop
      * @param {{(data:{renderData:any[];renderOffsets:number[];scrollBarHeight:number;renderStart:number;scrollTop:number;}):void;}} callback
      */
-    async init(list, scrollBar, scrollTop, callback) {
+    async init(list, scrollTop, callback) {
         this.list = list
-        this.scrollBar = scrollBar
         this.listScrollTop = scrollTop
         this.hasInit = true
         this.onUpdate = callback
@@ -139,24 +136,26 @@ export class ListState {
      * @param {TouchEvent} e
      */
     async onTouchEnd(e) {
-        if (performance.now() - this.lastFlingTime < 800) {
-            this.flingScale *= 3
+
+        if (this.flingSpeed * this.touchSpeed < 0 || Math.abs(this.touchSpeed) < 3) {
+            this.flingSpeed = this.touchSpeed
         } else {
-            this.flingScale = 1
+            this.flingSpeed += this.touchSpeed
         }
-        if (Math.abs(this.touchSpeed) > 1) {
-            this.lastFlingTime = performance.now()
+
+        if (Math.abs(this.flingSpeed) > 10) {
+            this.flingSpeed *= 3
         }
-        let speed = this.touchSpeed * this.flingScale
+
         let time = performance.now()
         let speedDelta = 0.99
         let version = ++this.scrollStateVersion
         let changed = true
         while (changed && version == this.scrollStateVersion) {
             await animationFrame()
-            changed = this.updateListScrollTop(speed * (performance.now() - time))
+            changed = this.updateListScrollTop(this.flingSpeed * (performance.now() - time))
             time = performance.now()
-            speed *= speedDelta
+            this.flingSpeed *= speedDelta
         }
     }
 
@@ -178,7 +177,7 @@ export class ListState {
             this.skipOnScrollEventOnce = false
             return
         }
-        let percent = this.scrollBar.scrollTop / (this.scrollBar.scrollHeight - this.scrollBar.clientHeight)
+        let percent = this.list.scrollTop / (this.scrollBarHeight - this.list.clientHeight)
         let countListScrollTop = percent * (this.listContentHeight - this.list.clientHeight)
         if (Math.abs(countListScrollTop - this.listScrollTop) > 1) {
             this.scrollStateVersion++
@@ -226,16 +225,21 @@ export class ListState {
     async renderList(scrollTop, datas) {
         let o = countOffsetAndStartIndex(this.sizeMap, this.data, this.listClientHeight, scrollTop)
 
+        this.scrollBarHeight = Math.min(this.listContentHeight, 100000)
+        let percent = scrollTop / (this.listContentHeight - this.listClientHeight)
+        let countScrollTop = percent * (this.scrollBarHeight - this.listClientHeight)
+
+        o.offsets = o.offsets.map(o => o + countScrollTop)
+
         this.listRenderStart = o.startIndex
         this.itemOffsetList = o.offsets
         this.listPageSize = this.itemOffsetList.length
         let end = this.listRenderStart + this.itemOffsetList.length
         this.renderData = datas.slice(this.listRenderStart, end)
 
-        if (datas.length < this.listPageSize) {
-            this.scrollBarHeight = 0
-        } else {
-            this.scrollBarHeight = this.listContentHeight
+        if (Math.abs(countScrollTop - this.list.scrollTop) > 0.01) {
+            this.skipOnScrollEventOnce = true
+            this.list.scrollTop = countScrollTop
         }
 
         this.onUpdate({
@@ -247,13 +251,6 @@ export class ListState {
         })
 
         await this.tick()
-
-        let percent = scrollTop / (this.scrollBarHeight - this.list.clientHeight)
-        let countScrollTop = percent * (this.scrollBar.scrollHeight - this.scrollBar.clientHeight)
-        if (Math.abs(countScrollTop - this.scrollBar.scrollTop) > 1) {
-            this.skipOnScrollEventOnce = true
-            this.scrollBar.scrollTop = percent * (this.scrollBar.scrollHeight - this.scrollBar.clientHeight)
-        }
 
         let heightMapChange = false
 

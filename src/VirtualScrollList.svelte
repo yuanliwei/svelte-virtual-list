@@ -7,8 +7,6 @@
 
     /** @type{HTMLDivElement} */
     let list = null;
-    /** @type{HTMLDivElement} */
-    let scrollBar = null;
 
     let listClientHeight = 0;
     let renderData = [];
@@ -22,7 +20,7 @@
     $: listState.updateListClientHeight(listClientHeight);
 
     onMount(() => {
-        listState.init(list, scrollBar, scrollTop, (o) => {
+        listState.init(list, scrollTop, (o) => {
             renderData = o.renderData;
             renderStart = o.renderStart;
             renderOffsets = o.renderOffsets;
@@ -30,28 +28,20 @@
             scrollTop = o.scrollTop;
         });
 
-        list.addEventListener("mouseenter", focusScrollBar);
-        list.addEventListener("mouseup", focusScrollBar);
         list.addEventListener("wheel", onWheel, { passive: false });
         list.addEventListener("touchstart", onTouchStart, { passive: true });
         list.addEventListener("touchmove", onTouchMove, { passive: false });
         list.addEventListener("touchend", onTouchEnd);
-        scrollBar.addEventListener("scroll", onScroll);
+        list.addEventListener("scroll", onScroll);
 
         return () => {
-            list.removeEventListener("mouseenter", focusScrollBar);
-            list.removeEventListener("mouseup", focusScrollBar);
             list.removeEventListener("wheel", onWheel);
             list.removeEventListener("touchstart", onTouchStart);
             list.removeEventListener("touchmove", onTouchMove);
             list.removeEventListener("touchend", onTouchEnd);
-            scrollBar.removeEventListener("scroll", onScroll);
+            list.removeEventListener("scroll", onScroll);
         };
     });
-
-    function focusScrollBar() {
-        scrollBar.focus();
-    }
 
     /**
      * @param {TouchEvent} e
@@ -118,29 +108,17 @@
     }
 </script>
 
-<div class="root">
-    <div
-        class="container"
-        bind:this={list}
-        bind:clientHeight={listClientHeight}
-    >
-        {#each renderData as item, index}
-            <div class="item" style="top:{renderOffsets[index]}px;left:0px">
-                <slot {item} index={index + renderStart} />
-            </div>
-        {/each}
-    </div>
-    <div tabindex="-1" class="scrollbar" bind:this={scrollBar}>
-        <div class="content" style="height:{scrollBarHeight}px;" />
-    </div>
+<div class="list" bind:this={list} bind:clientHeight={listClientHeight}>
+    <span class="scroller" style="height:{scrollBarHeight}px;" />
+    {#each renderData as item, index}
+        <div class="item" style="top:{renderOffsets[index]}px;left:0px">
+            <slot {item} index={index + renderStart} />
+        </div>
+    {/each}
 </div>
 
 <style>
-    .root {
-        height: 100%;
-        position: relative;
-    }
-    .container {
+    .list {
         overflow: auto;
         position: relative;
         height: 100%;
@@ -149,23 +127,8 @@
         position: absolute;
         width: 100%;
     }
-    .scrollbar {
-        outline: none;
-        overflow: auto;
-        position: absolute;
-        height: 100%;
-        right: 0;
-        top: 0;
-    }
-    .content {
-        width: 1px;
-    }
-    @media (max-width: 480px) {
-        .container {
-            overflow: hidden;
-        }
-        .content {
-            width: 10px;
-        }
+    .scroller {
+        width: 10px;
+        display: block;
     }
 </style>
