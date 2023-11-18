@@ -3,6 +3,7 @@
     import { ListState } from "./lib.js";
 
     export let data = [];
+    export let size = 0;
     export let scrollTop = 0;
 
     /** @type{HTMLDivElement} */
@@ -17,6 +18,7 @@
     const listState = new ListState(tick);
 
     $: listState.updateListData(data);
+    $: listState.updateListDataSize(size);
     $: listState.updateListClientHeight(listClientHeight);
 
     onMount(() => {

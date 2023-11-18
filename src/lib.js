@@ -20,6 +20,7 @@ export class ListState {
         this.flingSpeed = 0
 
         this.data = []
+        this.dataSize = 0
         this.renderData = []
 
         this.tick = tick || (() => new Promise((resolve) => setTimeout(resolve)))
@@ -57,6 +58,15 @@ export class ListState {
      */
     updateListData(data) {
         this.data = data
+        this.dataSize = data.length
+        this.refresh()
+    }
+
+    /**
+     * @param {number} size
+     */
+    updateListDataSize(size) {
+        this.dataSize = Math.max(this.dataSize, size)
         this.refresh()
     }
 
@@ -204,7 +214,7 @@ export class ListState {
             countListScrollTop = this.listContentHeight - this.listClientHeight
         }
 
-        if (this.data.length < this.listPageSize) {
+        if (this.dataSize < this.listPageSize) {
             countListScrollTop = 0
         }
 
@@ -223,8 +233,8 @@ export class ListState {
     * @param {object[]} [datas]
     */
     async renderList(scrollTop, datas) {
-        let o = countOffsetAndStartIndex(this.sizeMap, this.data, this.listClientHeight, scrollTop)
-
+        let o = countOffsetAndStartIndex(this.sizeMap, this.dataSize, this.listClientHeight, scrollTop)
+        console.log('renderList', o)
         this.scrollBarHeight = Math.min(this.listContentHeight, 100000)
         let percent = scrollTop / (this.listContentHeight - this.listClientHeight)
         let countScrollTop = percent * (this.scrollBarHeight - this.listClientHeight)
@@ -235,7 +245,11 @@ export class ListState {
         this.itemOffsetList = o.offsets
         this.listPageSize = this.itemOffsetList.length
         let end = this.listRenderStart + this.itemOffsetList.length
-        this.renderData = datas.slice(this.listRenderStart, end)
+        if (this.data.length < this.dataSize) {
+            this.renderData = Array.from({ length: this.itemOffsetList.length })
+        } else {
+            this.renderData = datas.slice(this.listRenderStart, end)
+        }
 
         if (Math.abs(countScrollTop - this.list.scrollTop) > 0.01) {
             this.skipOnScrollEventOnce = true
@@ -280,7 +294,7 @@ export class ListState {
             }
         }
         if (heightMapChange) {
-            this.listContentHeight = countListContentHeightWithIndex(this.sizeMap, datas.length)
+            this.listContentHeight = countListContentHeightWithIndex(this.sizeMap, this.dataSize)
             await this.renderList(scrollTop, datas)
         }
     }
@@ -312,11 +326,11 @@ function countListContentHeightWithIndex(map, index) {
 
 /**
  * @param {Map<number, number>} map
- * @param {any[]} data
+ * @param {number} size
  * @param {number} listClientHeight
  * @param {number} scrollTop
  */
-export function countOffsetAndStartIndex(map, data, listClientHeight, scrollTop) {
+export function countOffsetAndStartIndex(map, size, listClientHeight, scrollTop) {
 
     let offsets = []
     let startIndex = 0
@@ -351,7 +365,7 @@ export function countOffsetAndStartIndex(map, data, listClientHeight, scrollTop)
     offsets.push(listItemOffset)
     let itemIndex = startIndex
     let currentListBottom = listItemOffset + previousValue
-    while (++itemIndex < data.length && currentListBottom < listClientHeight) {
+    while (++itemIndex < size && currentListBottom < listClientHeight) {
         offsets.push(currentListBottom)
         let height = previousValue
         if (map.has(itemIndex)) {

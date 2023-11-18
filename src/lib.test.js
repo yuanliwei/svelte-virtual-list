@@ -4,10 +4,10 @@ import { countOffsetAndStartIndex } from './lib.js'
 
 test('countOffsetAndStartIndex', () => {
     let map = new Map()
-    let data = [...new Uint8Array(1000)].map((o, i) => i)
+    let size = 1000
     let scrollTop = 0
     let listClientHeight = 400
-    let o = countOffsetAndStartIndex(map, data, listClientHeight, scrollTop)
+    let o = countOffsetAndStartIndex(map, size, listClientHeight, scrollTop)
 
     deepStrictEqual(o, {
         startIndex: 0,
@@ -17,10 +17,10 @@ test('countOffsetAndStartIndex', () => {
 
     map = new Map()
     map.set(0, 45)
-    data = [...new Uint8Array(1000)].map((o, i) => i)
+    size = 1000
     scrollTop = 0
     listClientHeight = 20
-    o = countOffsetAndStartIndex(map, data, listClientHeight, scrollTop)
+    o = countOffsetAndStartIndex(map, size, listClientHeight, scrollTop)
 
     deepStrictEqual(o, {
         startIndex: 0,
@@ -29,10 +29,10 @@ test('countOffsetAndStartIndex', () => {
 
     map = new Map()
     map.set(0, 45)
-    data = [...new Uint8Array(1000)].map((o, i) => i)
+    size = 1000
     scrollTop = 0
     listClientHeight = 50
-    o = countOffsetAndStartIndex(map, data, listClientHeight, scrollTop)
+    o = countOffsetAndStartIndex(map, size, listClientHeight, scrollTop)
 
     deepStrictEqual(o, {
         startIndex: 0,
@@ -41,10 +41,10 @@ test('countOffsetAndStartIndex', () => {
 
     map = new Map()
     map.set(0, 45)
-    data = [...new Uint8Array(1000)].map((o, i) => i)
+    size = 1000
     scrollTop = 0
     listClientHeight = 90
-    o = countOffsetAndStartIndex(map, data, listClientHeight, scrollTop)
+    o = countOffsetAndStartIndex(map, size, listClientHeight, scrollTop)
 
     deepStrictEqual(o, {
         startIndex: 0,
@@ -53,10 +53,10 @@ test('countOffsetAndStartIndex', () => {
 
     map = new Map()
     map.set(0, 45)
-    data = [...new Uint8Array(1000)].map((o, i) => i)
+    size = 1000
     scrollTop = 0
     listClientHeight = 91
-    o = countOffsetAndStartIndex(map, data, listClientHeight, scrollTop)
+    o = countOffsetAndStartIndex(map, size, listClientHeight, scrollTop)
 
     deepStrictEqual(o, {
         startIndex: 0,
@@ -65,10 +65,10 @@ test('countOffsetAndStartIndex', () => {
 
     map = new Map()
     map.set(0, 45)
-    data = [...new Uint8Array(1000)].map((o, i) => i)
+    size = 1000
     scrollTop = 10
     listClientHeight = 91
-    o = countOffsetAndStartIndex(map, data, listClientHeight, scrollTop)
+    o = countOffsetAndStartIndex(map, size, listClientHeight, scrollTop)
 
     deepStrictEqual(o, {
         startIndex: 0,
@@ -78,10 +78,10 @@ test('countOffsetAndStartIndex', () => {
     map = new Map()
     map.set(0, 45)
     map.set(3, 15)
-    data = [...new Uint8Array(1000)].map((o, i) => i)
+    size = 1000
     scrollTop = 123
     listClientHeight = 91
-    o = countOffsetAndStartIndex(map, data, listClientHeight, scrollTop)
+    o = countOffsetAndStartIndex(map, size, listClientHeight, scrollTop)
 
     deepStrictEqual(o, {
         offsets: [-33, 12, 27, 42, 57, 72, 87],
