@@ -117,6 +117,11 @@ export class ListState {
         await this.scrollToWithListScrollTop(countListScrollTop, animation)
     }
 
+    async reset() {
+        this.sizeMap.clear()
+        await this.refresh()
+    }
+
     /**
      * @param {TouchEvent} e
      */
@@ -234,7 +239,6 @@ export class ListState {
     */
     async renderList(scrollTop, datas) {
         let o = countOffsetAndStartIndex(this.sizeMap, this.dataSize, this.listClientHeight, scrollTop)
-        console.log('renderList', o)
         this.scrollBarHeight = Math.min(this.listContentHeight, 100000)
         let percent = scrollTop / (this.listContentHeight - this.listClientHeight)
         let countScrollTop = percent * (this.scrollBarHeight - this.listClientHeight)
@@ -251,10 +255,7 @@ export class ListState {
             this.renderData = datas.slice(this.listRenderStart, end)
         }
 
-        if (Math.abs(countScrollTop - this.list.scrollTop) > 0.01) {
-            this.skipOnScrollEventOnce = true
-            this.list.scrollTop = countScrollTop
-        }
+
 
         this.onUpdate({
             renderData: this.renderData,
@@ -265,6 +266,11 @@ export class ListState {
         })
 
         await this.tick()
+
+        if (Math.abs(countScrollTop - this.list.scrollTop) > 0.01) {
+            this.skipOnScrollEventOnce = true
+            this.list.scrollTop = countScrollTop
+        }
 
         let heightMapChange = false
 

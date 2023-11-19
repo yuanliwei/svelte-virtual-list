@@ -108,6 +108,10 @@
     export async function scrollToPosition(index, animation) {
         await listState.scrollToPosition(index, animation);
     }
+
+    export async function reset(){
+        await listState.reset()
+    }
 </script>
 
 <div class="list" bind:this={list} bind:clientHeight={listClientHeight}>

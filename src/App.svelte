@@ -1,107 +1,82 @@
 <script>
   import VirtualScrollList from "./VirtualScrollList.svelte";
+  import { getName } from "./data.js";
 
-  let datas = [...new Uint8Array(1000000)].map((o, i) => ({
-    id: i,
-    text: "---" + (i + 1) + "===",
+  let datas = Array.from({ length: 1000000 }).map((_, i) => ({
+    id: i + 1,
+    text: getName(i),
   }));
-  // let datas = [...new Uint8Array(1000)].map((o, i) => ({ id: i, text: "---" + (i + 1) + "===", }));
 
-  let showList = true;
-  let scrollTop = 0;
+  let showList1 = true;
+  let showList2 = true;
+  let scrollTop1 = 0;
+  let scrollTop2 = 0;
   /** @type{VirtualScrollList} */
-  let list = null;
+  let list1 = null;
+  /** @type{VirtualScrollList} */
+  let list2 = null;
 
-  class NameUtil {
-    constructor() {
-      this.nameCode =
-        "鑫正涵琛妍芸露楠薇锦彤采初美冬婧桐莲彩洁" +
-        "呈菡怡冰雯雪茜优静萱林馨鹤梅娜璐曼彬芳颖韵曦蔚桂月梦琪蕾" +
-        "依碧枫欣杉丽祥雅欢婷舒心紫芙慧梓香玥菲璟茹昭岚玲云华阳弦" +
-        "莉明珊雨蓓旭钰柔敏家凡花媛歆沛姿妮珍琬彦倩玉柏橘昕桃栀克" +
-        "帆俊惠漫芝寒诗春淑凌珠灵可格璇函晨嘉鸿瑶帛琳文洲娅霞颜康" +
-        "卓星礼远帝裕腾震骏加强运杞良梁逸禧辰佳子栋博年振荣国钊喆" +
-        "睿泽允邦骞哲皓晖福濡佑然升树祯贤成槐锐芃驰凯韦信宇鹏盛晓" +
-        "翰海休浩诚辞轩奇潍烁勇铭平瑞仕谛翱伟安延锋寅起谷稷胤涛弘" +
-        "侠峰材爵楷尧炳乘蔓桀恒桓日坤龙锟天郁吉暄澄中斌杰祜权畅德";
-    }
+  let list1Position = 0;
+  let list2Position = 0;
 
-    get() {
-      let length = [3, 2, 4, 5][
-        Math.floor(Math.random() * Math.random() * 3.1)
-      ];
-      let name = [];
-      while (length--) {
-        name.push(
-          this.nameCode[Math.floor(Math.random() * this.nameCode.length)]
-        );
-      }
-      return name.join("");
-    }
-  }
-
-  const nameGenerate = new NameUtil();
-  const nameMap = new Map();
-  function getName(index) {
-    if (nameMap.has(index)) {
-      return nameMap.get(index);
-    }
-    nameMap.set(index, nameGenerate.get());
-    return nameMap.get(index);
-  }
-
-  // $: console.log("initScrollTop", scrollTop);
+  $: list1?.scrollToPosition(list1Position);
+  $: list2?.scrollToPosition(list2Position);
 </script>
 
 <main>
-  <div class="content">
-    {#if showList}
-      <VirtualScrollList
-        data={[]}
-        size={999999999999}
-        bind:scrollTop
-        let:item
-        let:index
-        bind:this={list}
-      >
-        <div class="item">{index} : {getName(index)}</div>
-      </VirtualScrollList>
-    {/if}
-  </div>
+  <section>
+    <p>虚拟列表，100万条数据</p>
+    <div class="content">
+      {#if showList1}
+        <VirtualScrollList
+          data={datas}
+          bind:scrollTop={scrollTop1}
+          let:item
+          let:index
+          bind:this={list1}
+        >
+          <div class="item">{index} : {item.text}</div>
+        </VirtualScrollList>
+      {/if}
+    </div>
 
-  <button
-    on:click={() => {
-      showList = !showList;
-    }}>toggle</button
-  >
-  <button
-    on:click={() => {
-      list.scrollToPercent(0.7, true);
-    }}
-  >
-    scrollToBottom
-  </button>
-  <button
-    on:click={() => {
-      list.scrollToPosition(34, true);
-    }}
-  >
-    scrollToPosition
-  </button>
-  <button
-    on:click={() => {
-      list.scrollListOffset(1000, true);
-    }}
-  >
-    scrollListOffset
-  </button>
+    <button on:click={() => { showList1 = !showList1; }} > toggle </button>
+    <button on:click={() => { list1.scrollToPercent(0.7, true); }} > scrollToPercent(0.7, true) </button>
+    <button on:click={() => { list1.scrollToPosition(34, true); }} > scrollToPosition(34, true) </button>
+    <button on:click={() => { list1.scrollListOffset(390, true); }} > scrollListOffset(390, true) </button>
+    <input type="number" placeholder="seek to" bind:value={list1Position} />
+  </section>
+  <section>
+    <p>虚拟列表+虚拟数据，1万亿条数据</p>
+    <div class="content">
+      {#if showList2}
+        <VirtualScrollList
+          size={100000000000}
+          bind:scrollTop={scrollTop2}
+          let:index
+          bind:this={list2}
+        >
+          <div class="item">{index} : {getName(index)}</div>
+        </VirtualScrollList>
+      {/if}
+    </div>
+
+    <button on:click={() => { showList2 = !showList2; }} > toggle </button>
+    <button on:click={() => { list2.scrollToPercent(0.7, true); }} > scrollToPercent(0.7, true) </button>
+    <button on:click={() => { list2.scrollToPosition(34, true); }} > scrollToPosition(34, true) </button>
+    <button on:click={() => { list2.scrollListOffset(390, true); }} > scrollListOffset(390, true) </button>
+    <button on:click={() => { list2.reset(); }} > reset() </button>
+    <input type="number" placeholder="move to" bind:value={list2Position} />
+  </section>
 </main>
 
 <style>
   main {
+    display: flex;
+  }
+  section {
     padding: 1em;
   }
-
   .content {
     background-color: aliceblue;
     height: 400px;
