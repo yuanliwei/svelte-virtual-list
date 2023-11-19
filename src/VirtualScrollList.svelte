@@ -109,8 +109,8 @@
         await listState.scrollToPosition(index, animation);
     }
 
-    export async function reset(){
-        await listState.reset()
+    export async function reset() {
+        await listState.reset();
     }
 </script>
 

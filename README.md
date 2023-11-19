@@ -1,6 +1,44 @@
 # Svelte VirtualScrollList
 
 
+
+[Demo](https://svelte.dev/repl/79a238b9b69e4143b2bc048207bb98bc?version=4.2.5)
+
+## API
+```js
+
+export let data = []
+export let size = 0
+export let scrollTop = 0
+
+/**
+ * @param {number} scrollTop
+ * @param {boolean} [animation]
+ */
+export async function scrollToWithListScrollTop(scrollTop, animation)
+
+/**
+ * @param {number} offset
+ * @param {boolean} animation
+ */
+export async function scrollListOffset(offset, animation)
+
+/**
+ * @param {number} percent 0-1
+ * @param {boolean} [animation]
+ */
+export async function scrollToPercent(percent, animation)
+
+/**
+ * @param {number} index
+ * @param {boolean} [animation]
+ */
+export async function scrollToPosition(index, animation)
+
+export async function reset()
+```
+
+## usage
 ```html
 <script>
   import VirtualScrollList from "@yuanliwei/svelte-virtual-list";
