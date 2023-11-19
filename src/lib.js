@@ -27,7 +27,7 @@ export class ListState {
     }
 
     /**
-     * @param {HTMLDivElement} list
+     * @param {HTMLElement} list
      * @param {number} scrollTop
      * @param {{(data:{renderData:any[];renderOffsets:number[];scrollBarHeight:number;renderStart:number;scrollTop:number;}):void;}} callback
      */
@@ -51,6 +51,7 @@ export class ListState {
     updateListClientHeight(height) {
         this.listClientHeight = height
         this.refresh()
+        this.scrollToWithListScrollTop(this.listScrollTop, false)
     }
 
     /**
@@ -255,8 +256,6 @@ export class ListState {
             this.renderData = datas.slice(this.listRenderStart, end)
         }
 
-
-
         this.onUpdate({
             renderData: this.renderData,
             renderStart: this.listRenderStart,
@@ -266,6 +265,10 @@ export class ListState {
         })
 
         await this.tick()
+
+        if (this.dataSize == 0) {
+            return
+        }
 
         if (Math.abs(countScrollTop - this.list.scrollTop) > 0.01) {
             this.skipOnScrollEventOnce = true
