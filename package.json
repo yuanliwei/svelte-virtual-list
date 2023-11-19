@@ -1,6 +1,6 @@
 {
   "name": "@yuanliwei/svelte-virtual-list",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "svelte virtual list",
   "type": "module",
   "author": "yuanliwei",
@@ -32,5 +32,10 @@
   },
   "peerDependencies": {
     "svelte": "*"
+  },
+  "peerDependenciesMeta": {
+    "svelte": {
+      "optional": true
+    }
   }
 }
