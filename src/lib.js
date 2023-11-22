@@ -145,6 +145,7 @@ export class ListState {
         this.lastTouchTime = e.timeStamp
         if (this.updateListScrollTop(deltaY)) {
             e.preventDefault()
+            e.stopPropagation()
         }
     }
 
@@ -186,6 +187,7 @@ export class ListState {
         this.scrollStateVersion++
         if (this.updateListScrollTop(e.deltaY)) {
             e.preventDefault()
+            e.stopPropagation()
         }
     }
 
