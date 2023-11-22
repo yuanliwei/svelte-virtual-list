@@ -1,6 +1,6 @@
 {
   "name": "@yuanliwei/svelte-virtual-list",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "svelte virtual list",
   "type": "module",
   "author": "yuanliwei",
