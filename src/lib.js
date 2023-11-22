@@ -13,7 +13,6 @@ export class ListState {
         this.scrollBarHeight = 0
         this.listContentHeight = 0
         this.scrollStateVersion = 0
-        this.enablePropagation = true
 
         this.lastTouchY = 0
         this.lastTouchTime = 0
@@ -146,9 +145,6 @@ export class ListState {
         this.lastTouchTime = e.timeStamp
         if (this.updateListScrollTop(deltaY)) {
             e.preventDefault()
-            e.stopPropagation()
-        } else if (!this.enablePropagation) {
-            e.stopPropagation()
         }
     }
 
@@ -190,9 +186,6 @@ export class ListState {
         this.scrollStateVersion++
         if (this.updateListScrollTop(e.deltaY)) {
             e.preventDefault()
-            e.stopPropagation()
-        } else if (!this.enablePropagation) {
-            e.stopPropagation()
         }
     }
 

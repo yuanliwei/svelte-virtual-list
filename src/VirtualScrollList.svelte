@@ -15,7 +15,7 @@
     let scrollBarHeight = 0;
     let renderStart = 0;
 
-    export const listState = new ListState(tick);
+    const listState = new ListState(tick);
 
     $: listState.updateListData(data);
     $: listState.updateListDataSize(size);
@@ -107,10 +107,6 @@
      */
     export async function scrollToPosition(index, animation) {
         await listState.scrollToPosition(index, animation);
-    }
-
-    export function setPropagationEnable(enable) {
-        listState.enablePropagation = enable;
     }
 
     export async function reset() {
