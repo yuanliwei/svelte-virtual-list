@@ -322,6 +322,13 @@ export class ListState {
         }
     }
 
+    countStickyTop() {
+        let stickyTop = 0
+        if (this.listContentHeight - this.listClientHeight > 0) {
+            stickyTop = this.listScrollTop * ((this.scrollBarHeight - this.listClientHeight) / (this.listContentHeight - this.listClientHeight))
+        }
+        return stickyTop
+    }
 }
 
 /**

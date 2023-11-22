@@ -73,6 +73,7 @@ export async function reset()
         <VirtualScrollList
           data={datas}
           bind:scrollTop={scrollTop1}
+          sticky={10} 
           let:item
           let:index
           bind:this={list1}

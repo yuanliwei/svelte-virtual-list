@@ -5,6 +5,7 @@
     export let data = [];
     export let size = 0;
     export let scrollTop = 0;
+    export let sticky = -1;
 
     /** @type{HTMLDivElement} */
     let list = null;
@@ -14,6 +15,7 @@
     let renderOffsets = [];
     let scrollBarHeight = 0;
     let renderStart = 0;
+    let stickyTop = 0;
 
     const listState = new ListState(tick);
 
@@ -28,6 +30,7 @@
             renderOffsets = o.renderOffsets;
             scrollBarHeight = o.scrollBarHeight;
             scrollTop = o.scrollTop;
+            stickyTop = listState.countStickyTop();
         });
 
         list.addEventListener("wheel", onWheel, { passive: false });
@@ -121,6 +124,11 @@
             <slot {item} index={index + renderStart} />
         </div>
     {/each}
+    {#if sticky > -1 && renderStart >= sticky}
+        <div class="item" style="top:{stickyTop}px;left:0px;">
+            <slot item={data[sticky]} index={sticky} />
+        </div>
+    {/if}
 </div>
 
 <style>

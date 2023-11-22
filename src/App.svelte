@@ -30,6 +30,7 @@
       {#if showList1}
         <VirtualScrollList
           data={datas}
+          sticky={10}
           bind:scrollTop={scrollTop1}
           let:item
           let:index
@@ -40,10 +41,34 @@
       {/if}
     </div>
 
-    <button on:click={() => { showList1 = !showList1; }} > toggle </button>
-    <button on:click={() => { list1.scrollToPercent(0.7, true); }} > scrollToPercent(0.7, true) </button>
-    <button on:click={() => { list1.scrollToPosition(34, true); }} > scrollToPosition(34, true) </button>
-    <button on:click={() => { list1.scrollListOffset(390, true); }} > scrollListOffset(390, true) </button>
+    <button
+      on:click={() => {
+        showList1 = !showList1;
+      }}
+    >
+      toggle
+    </button>
+    <button
+      on:click={() => {
+        list1.scrollToPercent(0.7, true);
+      }}
+    >
+      scrollToPercent(0.7, true)
+    </button>
+    <button
+      on:click={() => {
+        list1.scrollToPosition(34, true);
+      }}
+    >
+      scrollToPosition(34, true)
+    </button>
+    <button
+      on:click={() => {
+        list1.scrollListOffset(390, true);
+      }}
+    >
+      scrollListOffset(390, true)
+    </button>
     <input type="number" placeholder="seek to" bind:value={list1Position} />
   </section>
   <section>
@@ -61,11 +86,41 @@
       {/if}
     </div>
 
-    <button on:click={() => { showList2 = !showList2; }} > toggle </button>
-    <button on:click={() => { list2.scrollToPercent(0.7, true); }} > scrollToPercent(0.7, true) </button>
-    <button on:click={() => { list2.scrollToPosition(34, true); }} > scrollToPosition(34, true) </button>
-    <button on:click={() => { list2.scrollListOffset(390, true); }} > scrollListOffset(390, true) </button>
-    <button on:click={() => { list2.reset(); }} > reset() </button>
+    <button
+      on:click={() => {
+        showList2 = !showList2;
+      }}
+    >
+      toggle
+    </button>
+    <button
+      on:click={() => {
+        list2.scrollToPercent(0.7, true);
+      }}
+    >
+      scrollToPercent(0.7, true)
+    </button>
+    <button
+      on:click={() => {
+        list2.scrollToPosition(34, true);
+      }}
+    >
+      scrollToPosition(34, true)
+    </button>
+    <button
+      on:click={() => {
+        list2.scrollListOffset(390, true);
+      }}
+    >
+      scrollListOffset(390, true)
+    </button>
+    <button
+      on:click={() => {
+        list2.reset();
+      }}
+    >
+      reset()
+    </button>
     <input type="number" placeholder="move to" bind:value={list2Position} />
   </section>
 </main>
@@ -78,12 +133,12 @@
     padding: 1em;
   }
   .content {
-    background-color: aliceblue;
     height: 400px;
     margin-top: 1em;
     box-sizing: border-box;
   }
   .item {
+    background-color: aliceblue;
     line-height: 3em;
     padding-left: 1em;
     box-sizing: border-box;
