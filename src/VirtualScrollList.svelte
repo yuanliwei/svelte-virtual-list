@@ -120,7 +120,7 @@
 <div class="list" bind:this={list} bind:clientHeight={listClientHeight}>
     <span class="scroller" style="height:{scrollBarHeight}px;" />
     {#each renderData as item, index}
-        <div class="item" style="top:{renderOffsets[index]}px;left:0px">
+        <div class="item" style="top:{renderOffsets[index]}px;left:0px" data-list-item>
             <slot {item} index={index + renderStart} />
         </div>
     {/each}

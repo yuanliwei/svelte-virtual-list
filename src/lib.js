@@ -291,7 +291,7 @@ export class ListState {
 
         let heightMapChange = false
 
-        let nodes = [...this.list.childNodes].filter((o) => o.nodeName == "DIV")
+        let nodes = Array.from(this.list.children).filter((/** @type{HTMLElement} */o) => o.hasAttribute('data-list-item'))
         let previousNodeHeight = 0
         let entries = [...this.sizeMap.entries()].sort((l, h) => l[0] - h[0])
         for (let i = 0; i < entries.length; i++) {
